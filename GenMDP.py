@@ -28,20 +28,12 @@ class Parametre:
     @staticmethod
     def close():
         exit(0)
-        
-    @staticmethod
-    def saut_de_ligne():
-        print()
-    
-    @staticmethod
-    def bar():
-        print("_"*80)
     
     @staticmethod  
     def affichage():
-        saut_de_ligne()
-        bar()
-        saut_de_ligne()
+        print()
+        print("_"*80)
+        print()
 
 
 class Application:
@@ -98,19 +90,19 @@ class Application:
     def saveMdp(self):
         if self.os == "Windows":
             try:
-                with open("Mdp_Historique\mdp.txt", "a") as f:
+                with open("Mdp_Historique\mdp.txt", "w") as f:
                     f.write(f"{self.site}: {self.password}\n")
             except:
                 os.mkdir('Mdp_Historique')
-                with open("Mdp_Historique\mdp.txt", "a") as f:
+                with open("Mdp_Historique\mdp.txt", "w") as f:
                     f.write(f"{self.site}: {self.password}\n")
         elif self.os =="Linux" or self.os == "Mac":
             try:
-                with open("Mdp_Historique/mdp.txt", "a") as f:
+                with open("Mdp_Historique/mdp.txt", "w") as f:
                     f.write(f"{self.site}: {self.password}\n")
             except:
                 os.mkdir('Mdp_Historique')
-                with open("Mdp_Historique/mdp.txt", "a") as f:
+                with open("Mdp_Historique/mdp.txt", "w") as f:
                     f.write(f"{self.site}: {self.password}\n")
         else:
             print("your device is not compatible")
@@ -135,29 +127,29 @@ class Application:
                 self.site = str(input("Entrez le nom du site : "))
                 break #arrete la boucle while
 
-    def main(self):
-        """
-            Fonction qui permet de lancer le programme
-        """
-        Parametre.affichage()
-        print("Your OS : ",self.os)
-        Parametre.affichage()
-        print("[A] Génerate Passeword")
-        print("[B] Test Passeword")
-        print("[X] Exit")
+def main():
+    """
+        Fonction qui permet de lancer le programme
+    """
+    app = Application()
+    Parametre.affichage()
+    print("Your OS : ",Os.get_os())
+    Parametre.affichage()
+    print("[A] Génerate Passeword")
+    print("[B] Test Passeword")
+    print("[X] Exit")
 
-        choice = str(input("> "))
-        if choice == "A":
-            genMDP()
-            saveMdp()
-        elif choice == "B":
-            verifyMDP()
-        else:
-            while choice != "X":
-                main()
-            exit()
+    choice = str(input("> "))
+    if choice == "A":
+        app.genMDP()
+        app.saveMdp()
+    elif choice == "B":
+        app.verifyMDP()
+    else:
+        while choice != "X":
+            main()
+        exit()
 
 #execute le programme
 if __name__ == "__main__":
-        app = Application()
-        app.main()
+        main()
