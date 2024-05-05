@@ -29,6 +29,10 @@ class Parametre:
     def close():
         exit(0)
     
+    @staticmethod
+    def saute_ligne():
+        print()
+
     @staticmethod  
     def affichage():
         print()
@@ -38,13 +42,16 @@ class Parametre:
 
 class Application:
     def __init__(self) -> None:
-        self.password:str = None
+        self.__password:str = None
         self.os = Os.get_os()
         self.site:str = None
         self.regex = r"^(?=.*[a-z]{2})(?=.*[A-Z]{2})(?=.*\d{2})(?=.*[!@#$%^&*()_+\-={}\[\]|\\:;\"'<>,.?/])(?=.*\s).{8,}$" #parametre qui par la suite pourra etre changer en fonction de la demande de l'utilisateur
     
+    def getMdp(self):
+        return self.__password
+
     def checkMdp(self):
-        password = self.password #recupere le mot de passe
+        password = self.__password #recupere le mot de passe
         strength = 0
         remarks = ""
         lower_count = upper_count = num_count = wspace_count = special_count = 0
@@ -60,6 +67,7 @@ class Application:
                 wspace_count += 1
             else:
                 special_count += 1
+        
         if lower_count >= 1:
             strength += 1
         if upper_count >= 1:
@@ -70,6 +78,7 @@ class Application:
             strength += 1
         if special_count >= 1:
             strength += 1
+        
         if strength == 1:
             remarks = "C'est un mot de passe très faible. Changez-le dès que possible."
         elif strength == 2:
@@ -80,6 +89,7 @@ class Application:
             remarks = "Votre mot de passe est difficile à deviner, mais vous pourriez le rendre encore plus sécurisé."
         elif strength == 5:
             remarks = "C'est un mot de passe extrêmement fort ! Les hackers n'ont aucune chance de deviner ce mot de passe !"
+        
         print("Votre mot de passe contient : ")
         print(f"{lower_count} lettres minuscules", f"{upper_count} lettres majuscules", f"{num_count} chiffres", f"{wspace_count} espaces", f"{special_count} caractères spéciaux")
         print(f"Indice de force du mot de passe : {strength / 5}")
@@ -90,20 +100,20 @@ class Application:
     def saveMdp(self):
         if self.os == "Windows":
             try:
-                with open("Mdp_Historique\mdp.txt", "w") as f:
-                    f.write(f"{self.site}: {self.password}\n")
+                with open("Mdp_Historique\mdp.txt", "a") as f:
+                    f.write(f"{self.site}: {self.__password}\n")
             except:
                 os.mkdir('Mdp_Historique')
-                with open("Mdp_Historique\mdp.txt", "w") as f:
-                    f.write(f"{self.site}: {self.password}\n")
+                with open("Mdp_Historique\mdp.txt", "a") as f:
+                    f.write(f"{self.site}: {self.__password}\n")
         elif self.os =="Linux" or self.os == "Mac":
             try:
-                with open("Mdp_Historique/mdp.txt", "w") as f:
-                    f.write(f"{self.site}: {self.password}\n")
+                with open("Mdp_Historique/mdp.txt", "a") as f:
+                    f.write(f"{self.site}: {self.__password}\n")
             except:
                 os.mkdir('Mdp_Historique')
-                with open("Mdp_Historique/mdp.txt", "w") as f:
-                    f.write(f"{self.site}: {self.password}\n")
+                with open("Mdp_Historique/mdp.txt", "a") as f:
+                    f.write(f"{self.site}: {self.__password}\n")
         else:
             print("your device is not compatible")
             exit()
@@ -122,7 +132,7 @@ class Application:
             mot_de_passe = ''.join(random.choice(code) for i in range(longueur)) #genere le mot de passe aléatoirement
 
             if re.match(self.regex, mot_de_passe): #verifie si le mots de passe verifie les restriction du regex
-                self.password = mot_de_passe
+                self.__password = mot_de_passe
                 mdpValide = True
                 self.site = str(input("Entrez le nom du site : "))
                 break #arrete la boucle while
@@ -142,9 +152,16 @@ def main():
     choice = str(input("> "))
     if choice == "A":
         app.genMDP()
+        Parametre.saute_ligne()
+        print(app.getMdp())
+        Parametre.saute_ligne()
         app.saveMdp()
+        Parametre.saute_ligne()
+        app.checkMdp()
+        main()
     elif choice == "B":
         app.verifyMDP()
+        main()
     else:
         while choice != "X":
             main()
